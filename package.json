@@ -1,0 +1,68 @@
+{
+  "name": "smart-health-monitoring-system",
+  "version": "1.0.0",
+  "description": "A comprehensive full-stack healthcare application with AI-powered triage and multi-portal architecture",
+  "main": "index.js",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend/patient-portal",
+    "frontend/clinician-portal",
+    "frontend/operator-portal",
+    "ai-engine"
+  ],
+  "scripts": {
+    "install-all": "npm install && npm run install:frontend && npm run install:backend && npm run install:ai",
+    "install:frontend": "cd frontend/patient-portal && npm install && cd ../clinician-portal && npm install && cd ../operator-portal && npm install",
+    "install:backend": "cd backend && npm install",
+    "install:ai": "cd ai-engine && npm install",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:patient\" \"npm run dev:clinician\" \"npm run dev:operator\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:patient": "cd frontend/patient-portal && npm start",
+    "dev:clinician": "cd frontend/clinician-portal && npm start",
+    "dev:operator": "cd frontend/operator-portal && npm start",
+    "build": "npm run build:backend && npm run build:frontend",
+    "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd frontend/patient-portal && npm run build && cd ../clinician-portal && npm run build && cd ../operator-portal && npm run build",
+    "test": "npm run test:backend && npm run test:frontend",
+    "test:backend": "cd backend && npm test",
+    "test:frontend": "cd frontend/patient-portal && npm test && cd ../clinician-portal && npm test && cd ../operator-portal && npm test",
+    "lint": "npm run lint:backend && npm run lint:frontend",
+    "lint:backend": "cd backend && npm run lint",
+    "lint:frontend": "cd frontend/patient-portal && npm run lint && cd ../clinician-portal && npm run lint && cd ../operator-portal && npm run lint",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "db:migrate": "cd backend && npm run db:migrate",
+    "db:seed": "cd backend && npm run db:seed",
+    "deploy": "cd deployment && ./deploy.sh"
+  },
+  "keywords": [
+    "healthcare",
+    "medical",
+    "triage",
+    "FHIR",
+    "HL7",
+    "PWA",
+    "react",
+    "nodejs",
+    "postgresql",
+    "AI",
+    "machine-learning"
+  ],
+  "author": "Smart Health Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "@types/node": "^20.10.5",
+    "typescript": "^5.3.3",
+    "eslint": "^8.56.0",
+    "prettier": "^3.1.1",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
