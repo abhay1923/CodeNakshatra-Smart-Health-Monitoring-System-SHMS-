@@ -379,12 +379,24 @@ button {
   overflow: hidden;
 }
 
+.scene-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
 .scene-fallback {
   position: absolute;
   inset: 0;
   display: grid;
   place-items: center;
   pointer-events: none;
+  z-index: 1;
+  transition: opacity 280ms ease;
+}
+
+.scene-fallback-muted {
+  opacity: 0.45;
 }
 
 .fallback-core,

@@ -166,6 +166,7 @@ function useThreePulse(containerRef: React.RefObject<HTMLDivElement>) {
       renderer.domElement.style.width = '100%';
       renderer.domElement.style.height = '100%';
       renderer.domElement.style.display = 'block';
+      renderer.domElement.className = 'scene-canvas';
       container.appendChild(renderer.domElement);
 
       scene.add(new THREE.AmbientLight(0x88bbff, 2.2));
@@ -775,15 +776,13 @@ function App() {
 
           <div className="hero-visual">
             <div className="scene-wrap" ref={sceneRef}>
-              {sceneFallback && (
-                <div className="scene-fallback">
-                  <div className="fallback-orbit orbit-a" />
-                  <div className="fallback-orbit orbit-b" />
-                  <div className="fallback-core" />
-                  <div className="fallback-pulse pulse-a" />
-                  <div className="fallback-pulse pulse-b" />
-                </div>
-              )}
+              <div className={`scene-fallback ${sceneReady && !sceneFallback ? 'scene-fallback-muted' : ''}`}>
+                <div className="fallback-orbit orbit-a" />
+                <div className="fallback-orbit orbit-b" />
+                <div className="fallback-core" />
+                <div className="fallback-pulse pulse-a" />
+                <div className="fallback-pulse pulse-b" />
+              </div>
             </div>
             <div className="hud-card hud-card-primary">
               <span>{roleCard.label} session</span>
