@@ -22,13 +22,22 @@ export const supabase: SupabaseClient | null = supabaseConfigured
   : null
   ;
 
+async function withTimeout<T>(promise: Promise<T>, timeoutMs = 4000, label = 'Request') {
+  return Promise.race<T>([
+    promise,
+    new Promise<T>((_, reject) => {
+      window.setTimeout(() => reject(new Error(`${label} timed out`)), timeoutMs);
+    }),
+  ]);
+}
+
 export async function probeSupabase() {
   if (!supabase) {
     return { configured: false, reachable: false, message: 'Env keys missing' };
   }
 
   try {
-    const { error } = await supabase.auth.getSession();
+    const { error } = await withTimeout(supabase.auth.getSession(), 4000, 'Supabase connection check');
     if (error) {
       return { configured: true, reachable: false, message: error.message };
     }
@@ -103,7 +112,7 @@ export async function getSession() {
   if (!supabase) {
     return null;
   }
-  const { data } = await supabase.auth.getSession();
+  const { data } = await withTimeout(supabase.auth.getSession(), 4000, 'Session restore');
   return data.session;
 }
 

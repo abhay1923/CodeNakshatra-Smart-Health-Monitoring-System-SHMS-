@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import toast from 'react-hot-toast';
 import {
@@ -131,108 +131,174 @@ function riskForEsi(esi: number) {
 }
 
 function useThreePulse(containerRef: React.RefObject<HTMLDivElement>) {
+  const [sceneReady, setSceneReady] = useState(false);
+  const [sceneFallback, setSceneFallback] = useState(false);
+
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(55, container.clientWidth / container.clientHeight, 0.1, 100);
-    camera.position.set(0, 0, 8);
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(container.clientWidth, container.clientHeight);
-    container.appendChild(renderer.domElement);
-
-    scene.add(new THREE.AmbientLight(0x88bbff, 1.8));
-    const point = new THREE.PointLight(0x63d1ff, 9, 30);
-    point.position.set(4, 2, 8);
-    scene.add(point);
-
-    const globe = new THREE.Mesh(
-      new THREE.IcosahedronGeometry(1.7, 1),
-      new THREE.MeshStandardMaterial({
-        color: 0x61d8ff,
-        roughness: 0.18,
-        metalness: 0.75,
-        wireframe: true,
-        emissive: 0x0f3153,
-      }),
-    );
-    scene.add(globe);
-
-    const ringGeometry = new THREE.TorusGeometry(2.8, 0.04, 16, 120);
-    const ringMaterial = new THREE.MeshBasicMaterial({ color: 0xa855f7, transparent: true, opacity: 0.8 });
-    const ringA = new THREE.Mesh(ringGeometry, ringMaterial);
-    ringA.rotation.x = Math.PI / 2.4;
-    const ringB = ringA.clone();
-    ringB.rotation.y = Math.PI / 3;
-    scene.add(ringA, ringB);
-
-    const particlesCount = 1100;
-    const positions = new Float32Array(particlesCount * 3);
-    for (let i = 0; i < particlesCount; i += 1) {
-      const radius = 4 + Math.random() * 2.8;
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(2 * Math.random() - 1);
-      positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
-      positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
-      positions[i * 3 + 2] = radius * Math.cos(phi);
-    }
-
-    const particles = new THREE.Points(
-      new THREE.BufferGeometry(),
-      new THREE.PointsMaterial({
-        color: 0xffffff,
-        size: 0.035,
-        transparent: true,
-        opacity: 0.85,
-      }),
-    );
-    particles.geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    scene.add(particles);
-
-    const clock = new THREE.Clock();
-    const resize = () => {
-      const width = container.clientWidth;
-      const height = container.clientHeight;
-      renderer.setSize(width, height);
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-    };
-
     let frameId = 0;
-    const animate = () => {
-      const elapsed = clock.getElapsedTime();
-      globe.rotation.y = elapsed * 0.35;
-      globe.rotation.x = Math.sin(elapsed * 0.3) * 0.35;
-      ringA.rotation.z = elapsed * 0.42;
-      ringB.rotation.x = elapsed * 0.26;
-      particles.rotation.y = elapsed * 0.05;
-      particles.rotation.x = elapsed * 0.03;
-      renderer.render(scene, camera);
-      frameId = requestAnimationFrame(animate);
-    };
+    let renderer: THREE.WebGLRenderer | null = null;
+    let resizeObserver: ResizeObserver | null = null;
+    let scene: THREE.Scene | null = null;
+    let globe: THREE.Mesh | null = null;
+    let core: THREE.Mesh | null = null;
+    let ringA: THREE.Mesh | null = null;
+    let ringB: THREE.Mesh | null = null;
+    let particles: THREE.Points | null = null;
+    let ringGeometry: THREE.TorusGeometry | null = null;
+    let ringMaterial: THREE.MeshBasicMaterial | null = null;
+    let camera: THREE.PerspectiveCamera | null = null;
 
-    resize();
-    animate();
-    window.addEventListener('resize', resize);
+    try {
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(55, 1, 0.1, 100);
+      camera.position.set(0, 0, 8);
 
-    return () => {
-      window.removeEventListener('resize', resize);
-      cancelAnimationFrame(frameId);
-      renderer.dispose();
-      globe.geometry.dispose();
-      (globe.material as THREE.Material).dispose();
-      ringGeometry.dispose();
-      ringMaterial.dispose();
-      particles.geometry.dispose();
-      (particles.material as THREE.Material).dispose();
-      if (container.contains(renderer.domElement)) {
-        container.removeChild(renderer.domElement);
+      renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true,
+        powerPreference: 'high-performance',
+      });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setClearColor(0x000000, 0);
+      renderer.domElement.style.width = '100%';
+      renderer.domElement.style.height = '100%';
+      renderer.domElement.style.display = 'block';
+      container.appendChild(renderer.domElement);
+
+      scene.add(new THREE.AmbientLight(0x88bbff, 2.2));
+      const point = new THREE.PointLight(0x63d1ff, 14, 40);
+      point.position.set(4, 2, 8);
+      const violet = new THREE.PointLight(0xa855f7, 10, 36);
+      violet.position.set(-4, -2, 7);
+      scene.add(point, violet);
+
+      globe = new THREE.Mesh(
+        new THREE.IcosahedronGeometry(1.7, 1),
+        new THREE.MeshStandardMaterial({
+          color: 0x61d8ff,
+          roughness: 0.12,
+          metalness: 0.75,
+          wireframe: true,
+          emissive: 0x0f3153,
+        }),
+      );
+
+      core = new THREE.Mesh(
+        new THREE.SphereGeometry(0.72, 32, 32),
+        new THREE.MeshStandardMaterial({
+          color: 0x6ee7ff,
+          emissive: 0x153d66,
+          metalness: 0.35,
+          roughness: 0.18,
+          transparent: true,
+          opacity: 0.95,
+        }),
+      );
+      scene.add(globe, core);
+
+      ringGeometry = new THREE.TorusGeometry(2.8, 0.04, 16, 120);
+      ringMaterial = new THREE.MeshBasicMaterial({ color: 0xa855f7, transparent: true, opacity: 0.85 });
+      ringA = new THREE.Mesh(ringGeometry, ringMaterial);
+      ringA.rotation.x = Math.PI / 2.4;
+      ringB = ringA.clone();
+      ringB.rotation.y = Math.PI / 3;
+      scene.add(ringA, ringB);
+
+      const particlesCount = 1100;
+      const positions = new Float32Array(particlesCount * 3);
+      for (let i = 0; i < particlesCount; i += 1) {
+        const radius = 4 + Math.random() * 2.8;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+        positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+        positions[i * 3 + 2] = radius * Math.cos(phi);
       }
-    };
+
+      particles = new THREE.Points(
+        new THREE.BufferGeometry(),
+        new THREE.PointsMaterial({
+          color: 0xffffff,
+          size: 0.04,
+          transparent: true,
+          opacity: 0.9,
+        }),
+      );
+      particles.geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      scene.add(particles);
+
+      const clock = new THREE.Clock();
+      const resize = () => {
+        if (!renderer || !camera) return;
+        const rect = container.getBoundingClientRect();
+        const width = Math.max(Math.floor(rect.width), 320);
+        const height = Math.max(Math.floor(rect.height), 320);
+        renderer.setSize(width, height, false);
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+      };
+
+      resizeObserver = new ResizeObserver(resize);
+      resizeObserver.observe(container);
+      window.addEventListener('resize', resize);
+
+      const animate = () => {
+        if (!renderer || !scene || !camera || !globe || !ringA || !ringB || !particles || !core) return;
+        const elapsed = clock.getElapsedTime();
+        globe.rotation.y = elapsed * 0.35;
+        globe.rotation.x = Math.sin(elapsed * 0.3) * 0.35;
+        core.rotation.y = elapsed * 0.5;
+        core.scale.setScalar(1 + Math.sin(elapsed * 1.8) * 0.06);
+        ringA.rotation.z = elapsed * 0.42;
+        ringB.rotation.x = elapsed * 0.26;
+        particles.rotation.y = elapsed * 0.05;
+        particles.rotation.x = elapsed * 0.03;
+        renderer.render(scene, camera);
+        if (!sceneReady) {
+          setSceneReady(true);
+          setSceneFallback(false);
+        }
+        frameId = requestAnimationFrame(animate);
+      };
+
+      resize();
+      animate();
+
+      const fallbackTimeout = window.setTimeout(() => {
+        if (!sceneReady) {
+          setSceneFallback(true);
+        }
+      }, 1500);
+
+      return () => {
+        window.clearTimeout(fallbackTimeout);
+        resizeObserver?.disconnect();
+        window.removeEventListener('resize', resize);
+        cancelAnimationFrame(frameId);
+        renderer?.dispose();
+        globe?.geometry.dispose();
+        (globe?.material as THREE.Material | undefined)?.dispose();
+        core?.geometry.dispose();
+        (core?.material as THREE.Material | undefined)?.dispose();
+        ringGeometry?.dispose();
+        ringMaterial?.dispose();
+        particles?.geometry.dispose();
+        (particles?.material as THREE.Material | undefined)?.dispose();
+        if (renderer && container.contains(renderer.domElement)) {
+          container.removeChild(renderer.domElement);
+        }
+      };
+    } catch {
+      setSceneFallback(true);
+      setSceneReady(false);
+      return;
+    }
   }, [containerRef]);
+
+  return { sceneReady, sceneFallback };
 }
 
 function App() {
@@ -261,21 +327,47 @@ function App() {
   const [reviewText, setReviewText] = useState('');
   const [reviewRating, setReviewRating] = useState(5);
 
-  useThreePulse(sceneRef);
+  const { sceneReady, sceneFallback } = useThreePulse(sceneRef);
+
+  const refreshServiceStatus = useCallback(() => {
+    fetchApiHealth()
+      .then(() => setBackendStatus('online'))
+      .catch(() => setBackendStatus('offline'));
+
+    probeSupabase().then((nextState) => {
+      setSupabaseState((current) => {
+        if (sessionUser && !nextState.reachable) {
+          return {
+            ...current,
+            configured: true,
+            reachable: true,
+            message: 'Authenticated session active',
+          };
+        }
+
+        return nextState;
+      });
+    });
+  }, [sessionUser]);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
   }, [appState]);
 
   useEffect(() => {
-    fetchApiHealth()
-      .then(() => setBackendStatus('online'))
-      .catch(() => setBackendStatus('offline'));
-
-    probeSupabase().then(setSupabaseState);
-  }, []);
+    refreshServiceStatus();
+    const intervalId = window.setInterval(refreshServiceStatus, 10000);
+    return () => window.clearInterval(intervalId);
+  }, [refreshServiceStatus]);
 
   useEffect(() => {
+    const loadingFallback = window.setTimeout(() => {
+      setAuthLoading(false);
+      setAuthNotice((current) =>
+        current || 'Session restore took too long. You can sign in manually.',
+      );
+    }, 5000);
+
     const hydrate = async () => {
       try {
         const session = await getSession();
@@ -288,6 +380,12 @@ function App() {
 
         const sessionResponse = await fetchSessionProfile();
         setSessionUser(sessionResponse.user);
+        setBackendStatus('online');
+        setSupabaseState({
+          configured: true,
+          reachable: true,
+          message: 'Authenticated session active',
+        });
         const dashboardResponse = await fetchDashboard();
         setDashboard(dashboardResponse);
         if (dashboardResponse.citizen?.consents) {
@@ -297,6 +395,7 @@ function App() {
         setSessionUser(null);
         setDashboard(null);
       } finally {
+        window.clearTimeout(loadingFallback);
         setAuthLoading(false);
       }
     };
@@ -313,6 +412,12 @@ function App() {
       try {
         const sessionResponse = await fetchSessionProfile();
         setSessionUser(sessionResponse.user);
+        setBackendStatus('online');
+        setSupabaseState({
+          configured: true,
+          reachable: true,
+          message: 'Authenticated session active',
+        });
         const dashboardResponse = await fetchDashboard();
         setDashboard(dashboardResponse);
       } catch (error) {
@@ -320,7 +425,10 @@ function App() {
       }
     });
 
-    return () => data.subscription.unsubscribe();
+    return () => {
+      window.clearTimeout(loadingFallback);
+      data.subscription.unsubscribe();
+    };
   }, []);
 
   const computedEsi = useMemo(
@@ -666,11 +774,21 @@ function App() {
           </div>
 
           <div className="hero-visual">
-            <div className="scene-wrap" ref={sceneRef} />
+            <div className="scene-wrap" ref={sceneRef}>
+              {sceneFallback && (
+                <div className="scene-fallback">
+                  <div className="fallback-orbit orbit-a" />
+                  <div className="fallback-orbit orbit-b" />
+                  <div className="fallback-core" />
+                  <div className="fallback-pulse pulse-a" />
+                  <div className="fallback-pulse pulse-b" />
+                </div>
+              )}
+            </div>
             <div className="hud-card hud-card-primary">
               <span>{roleCard.label} session</span>
               <strong>RBAC active</strong>
-              <small>{supabaseState.message}</small>
+              <small>{sceneReady ? supabaseState.message : 'Rendering immersive scene'}</small>
             </div>
             <div className="hud-card hud-card-secondary">
               <ShieldCheck size={16} />
