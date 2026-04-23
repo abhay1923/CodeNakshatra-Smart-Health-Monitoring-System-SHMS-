@@ -1,186 +1,286 @@
 # Smart Health Monitoring System (SHMS)
 
-A comprehensive full-stack healthcare application integrating manual uploads, partner API imports, ESI triage, patient/clinician portals, operator dashboards, consent management, offline access, multilingual/voice input, and notifications.
+A role-based smart health monitoring web application with a 3D frontend, Supabase authentication, and an Express backend that verifies JWTs and enforces access by role.
 
-## 🏗️ Architecture Overview
+Created by **Abhay Kaushik** and **Ayushi Bendal**.
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        FRONTEND LAYER                           │
-├─────────────────┬─────────────────┬─────────────────────────────┤
-│  Patient Portal │ Clinician Portal│    Operator Portal          │
-│  - Upload docs  │ - Monitor pts   │  - Partner onboarding      │
-│  - View results │ - Triage alerts │  - DLQ management           │
-│  - Voice input  │ - Search records│  - Audit logs               │
-│  - Multilingual │ - Consent mgmt  │  - System monitoring        │
-└─────────────────┴─────────────────┴─────────────────────────────┘
-                           │
-┌─────────────────────────────────────────────────────────────────┐
-│                        API GATEWAY                              │
-│  OAuth2/JWT Auth │ Rate Limiting │ Request Validation           │
-└─────────────────────────────────────────────────────────────────┘
-                           │
-┌─────────────────────────────────────────────────────────────────┐
-│                       BACKEND SERVICES                          │
-├─────────────────┬─────────────────┬─────────────────────────────┤
-│  Ingress APIs   │   Core Services │    AI/ML Engine             │
-│  - FHIR/HL7     │  - Validation   │  - ESI Triage               │
-│  - CSV/JSON     │  - Mapping      │  - Risk Scoring             │
-│  - Bulk Import  │  - Consent Mgmt │  - Anomaly Detection        │
-│  - Webhooks     │  - Notifications│  - Health Analytics         │
-└─────────────────┴─────────────────┴─────────────────────────────┘
-                           │
-┌─────────────────────────────────────────────────────────────────┐
-│                       DATA LAYER                                │
-├─────────────────┬─────────────────┬─────────────────────────────┤
-│   PostgreSQL    │     Redis       │    File Storage             │
-│  - Patient data │  - Sessions     │  - Documents                │
-│  - Encounters   │  - Cache        │  - Medical files            │
-│  - Lab results  │  - DLQ          │  - Audit trails             │
-│  - Reviews      │  - Jobs         │  - Raw payloads             │
-└─────────────────┴─────────────────┴─────────────────────────────┘
-```
+## Overview
 
-## 🚀 Features
+This project currently includes:
 
-### Patient Portal
-- 📄 Upload health documents (CSV, JSON, HL7, PDFs)
-- 📊 View lab results, vitals, history, and personalized recommendations
-- 🌍 Multilingual support (React-i18next)
-- 🎤 Voice-assisted data entry (Speech-to-Text)
-- 📱 Offline-first PWA with IndexedDB sync
-- 🔒 Consent management UI (grant/revoke)
-- ⭐ Doctor review module (1–5 stars + comments)
+- A React + TypeScript + Vite frontend
+- A 3D immersive dashboard UI
+- Supabase authentication
+- Role-based access control for:
+  - `citizen`
+  - `doctor`
+  - `admin`
+- An Express backend that verifies Supabase JWTs
+- Protected backend APIs for role-specific data and actions
 
-### Clinician Portal
-- 📋 Dashboard for patient monitoring
-- 🚨 Real-time triage alerts (ESI levels)
-- 🔍 Search patient records (labs, encounters, documents)
-- 🔐 Manage patient consents
-- 📝 Access reviews/feedback for performance improvement
+## Roles and Access
 
-### Operator Portal
-- 🤝 Partner onboarding (API mapping, sandbox keys)
-- 🔧 Dead Letter Queue (DLQ) repair tools
-- 📊 Audit logs viewer
-- 📈 Monitoring dashboards (ingestion errors, job latency, consent violations)
+### Citizen
+- Sign in and access personal health records
+- Upload health-related documents
+- Manage consent settings
+- Submit reviews and feedback
 
-### AI/ML & Triage
-- 🏥 Emergency Severity Index (ESI) Engine
-- 🤖 Rule-based + ML-assisted triage
-- 📈 Risk scoring (chronic disease, readmission prediction)
-- 🔍 Anomaly detection in vitals
-- 💡 Personalized health tips (preventive care)
+### Doctor
+- Access patient roster
+- View urgent triage queue
+- Run triage actions through protected backend APIs
+- Review care workflow data
 
-## 🛠️ Technology Stack
+### Admin
+- View partner feed health
+- Access audit and governance data
+- Monitor operational activity
 
-- **Frontend**: React 18, TypeScript, Tailwind CSS, PWA
-- **Backend**: Node.js, Express/NestJS, TypeScript
-- **Database**: PostgreSQL, Redis
-- **AI/ML**: TensorFlow.js, Python scikit-learn
-- **Authentication**: OAuth2, JWT, mTLS
-- **Deployment**: Docker, Kubernetes (AKS), Azure services
-- **Testing**: Jest, Cypress, k6 load testing
+## Tech Stack
 
-## 📁 Project Structure
+- **Frontend:** React 18, TypeScript, Vite, Tailwind CSS, Three.js
+- **Backend:** Node.js, Express, TypeScript
+- **Auth:** Supabase Auth
+- **JWT Verification:** `jose`
+- **Styling:** Tailwind CSS + custom CSS
 
-```
-smart-health-monitoring-system/
-├── frontend/                 # React frontend applications
-│   ├── patient-portal/      # Patient-facing interface
-│   ├── clinician-portal/    # Healthcare provider interface
-│   └── operator-portal/     # System admin interface
-├── backend/                 # Node.js backend services
+## Project Structure
+
+```text
+A-comprehensive-smart-health-monitoring-system/
+├── backend/
 │   ├── src/
-│   │   ├── api/            # REST API endpoints
-│   │   ├── services/       # Business logic
-│   │   ├── models/         # Data models
-│   │   └── middleware/     # Auth, validation, etc.
-├── database/               # Database schemas and migrations
-├── ai-engine/             # AI/ML triage and analytics
-├── deployment/            # Docker, K8s, CI/CD configs
-└── docs/                  # Documentation
+│   │   └── index.ts
+│   ├── package.json
+│   └── .env.example
+├── frontend/
+│   └── patient-portal/
+│       ├── src/
+│       │   ├── App.tsx
+│       │   ├── main.tsx
+│       │   └── lib/
+│       ├── package.json
+│       ├── .env.example
+│       └── vite.config.ts
+├── package.json
+└── README.md
 ```
 
-## 🔧 Quick Start
+## Prerequisites
 
-1. **Clone and Install**
-   ```bash
-   git clone <repository-url>
-   cd smart-health-monitoring-system
-   npm install
-   ```
+Install these before running the app:
 
-2. **Setup Database**
-   ```bash
-   docker-compose up -d postgres redis
-   npm run db:migrate
-   ```
+- Node.js `18+`
+- npm `9+`
 
-3. **Start Development**
-   ```bash
-   # Backend
-   cd backend && npm run dev
-   
-   # Frontend (separate terminals)
-   cd frontend/patient-portal && npm start
-   cd frontend/clinician-portal && npm start
-   cd frontend/operator-portal && npm start
-   ```
+## Supabase Setup
 
-## 🔐 Security Features
+This app uses Supabase for authentication.
 
-- **Authentication**: OAuth2 + JWT + optional mTLS
-- **Authorization**: RBAC (patient, clinician, operator roles)
-- **Encryption**: TLS (in transit) + AES-256 (at rest)
-- **Audit Trails**: Every access logged
-- **Consent Enforcement**: Patient-controlled data access
+### Frontend environment
 
-## 🌐 API Documentation
+Create:
 
-The SHMS provides comprehensive RESTful APIs:
+`frontend/patient-portal/.env.local`
 
-- **Ingress APIs**: `/api/v1/import/*` - Data ingestion
-- **Export APIs**: `/api/v1/export/*` - Data export
-- **Patient APIs**: `/api/v1/patient/*` - Patient records
-- **Webhook APIs**: `/webhooks/*` - External integrations
+with:
 
-See [API Documentation](docs/api.md) for detailed endpoints.
+```env
+VITE_SUPABASE_URL=https://ssleaezheghgxrnoqjkp.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
+VITE_API_BASE_URL=http://localhost:3001
+```
 
-## 🚀 Deployment
+### Backend environment
 
-The system is designed for Azure deployment:
+Create:
 
-- **AKS** (Kubernetes) for services
-- **APIM** for API gateway
-- **CosmosDB/PostgreSQL** for persistence
-- **Redis** for caching
-- **Service Bus** for DLQ + async processing
+`backend/.env`
 
-## 🧪 Testing
+with:
 
-- **Unit Tests**: Jest with >80% coverage
-- **Integration Tests**: API endpoint testing
-- **Load Tests**: k6 performance testing
-- **Clinical Validation**: Healthcare workflow testing
+```env
+NODE_ENV=development
+PORT=3001
+DATABASE_URL=postgresql://shms_user:shms_password@localhost:5432/shms_db?schema=public
+REDIS_URL=redis://localhost:6379
+JWT_SECRET=your-super-secret-jwt-key-change-in-production-min-32-chars
+JWT_EXPIRES_IN=7d
+BCRYPT_ROUNDS=12
+CORS_ORIGINS=http://localhost:3000
+SUPABASE_URL=https://ssleaezheghgxrnoqjkp.supabase.co
+SUPABASE_ANON_KEY=your-anon-key
+```
 
-## 📊 Monitoring & Observability
+Note:
+- The backend currently verifies Supabase JWTs for protected API access.
+- `DATABASE_URL` and `REDIS_URL` are present for future expansion, but the current running auth flow does not require local Postgres or Redis to sign in and use the RBAC demo.
 
-- **Metrics**: ingest_rate, error_rate, triage_latency
-- **Tracing**: OpenTelemetry end-to-end
-- **SLOs**: ingestion <2s, triage notifications <30s
+## Install Dependencies
 
-## 🔮 Future Enhancements
+From the project root:
 
-- **Blockchain Audit Trail**: Immutable logging
-- **AI Doctor Recommendations**: ML-powered clinician ranking
-- **IoMT Integration**: Real-time wearable device data
-- **Advanced Analytics**: Predictive health modeling
+```bash
+npm install
+```
 
-## 📄 License
+If needed, also install workspace dependencies explicitly:
 
-[MIT License](LICENSE)
+```bash
+cd backend
+npm install
 
-## 🤝 Contributing
+cd ../frontend/patient-portal
+npm install
+```
 
-Please read [CONTRIBUTING.md](docs/CONTRIBUTING.md) for contribution guidelines.
+## Run the Application
+
+Open two terminals.
+
+### 1. Start the backend
+
+```bash
+cd backend
+npm run dev
+```
+
+Backend runs at:
+
+[http://localhost:3001](http://localhost:3001)
+
+Health check:
+
+[http://localhost:3001/health](http://localhost:3001/health)
+
+### 2. Start the frontend
+
+```bash
+cd frontend/patient-portal
+npm run dev
+```
+
+Frontend runs at:
+
+[http://localhost:3000](http://localhost:3000)
+
+## Build for Production
+
+### Backend
+
+```bash
+cd backend
+npm run build
+```
+
+### Frontend
+
+```bash
+cd frontend/patient-portal
+npm run build
+```
+
+## Authentication Notes
+
+### Sign up
+
+You can create a new account from the frontend login screen.
+
+During sign-up, the selected role is stored in Supabase user metadata:
+
+- `citizen`
+- `doctor`
+- `admin`
+
+### If login says "email not confirmed"
+
+Your Supabase project has email confirmation enabled.
+
+You can either:
+
+1. Confirm the signup email from your inbox
+2. Or disable email confirmation in Supabase:
+   - `Authentication`
+   - `Providers`
+   - `Email`
+   - turn off required email confirmation
+
+## Protected Backend API Routes
+
+The backend exposes role-aware endpoints such as:
+
+- `GET /health`
+- `GET /api/v1`
+- `GET /api/v1/auth/session`
+- `GET /api/v1/dashboard`
+- `GET /api/v1/citizen/records`
+- `POST /api/v1/citizen/consents/:id`
+- `GET /api/v1/doctor/patients`
+- `POST /api/v1/doctor/triage`
+- `GET /api/v1/admin/feeds`
+- `GET /api/v1/admin/audit`
+
+All protected routes require a valid Supabase bearer token.
+
+## Current App Behavior
+
+The current version is focused on:
+
+- working login/signup flow
+- role-based interface rendering
+- backend JWT verification
+- protected API access by role
+- 3D frontend dashboard experience
+
+Some data is still demo-backed for presentation purposes, but the auth and access-control flow is real.
+
+## Troubleshooting
+
+### Frontend says backend is offline
+
+Make sure the backend is running:
+
+```bash
+cd backend
+npm run dev
+```
+
+Then test:
+
+```bash
+http://localhost:3001/health
+```
+
+### Site says `ERR_CONNECTION_REFUSED`
+
+Usually that means the dev server stopped. Restart both:
+
+```bash
+cd backend
+npm run dev
+```
+
+```bash
+cd frontend/patient-portal
+npm run dev
+```
+
+### Supabase is connected but login fails
+
+Check:
+
+- the correct project URL is in `.env.local`
+- the anon key is valid
+- the user has confirmed email if confirmation is enabled
+
+## Credits
+
+This project was created by:
+
+- **Abhay Kaushik**
+- **Ayushi Bendal**
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).

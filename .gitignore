@@ -259,6 +259,7 @@ typedoc/
 local/
 dev-notes.md
 todo.md
+frontend/patient-portal/nul
 
 # Deployment
 deployment/secrets/
