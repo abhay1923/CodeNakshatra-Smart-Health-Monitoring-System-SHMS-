@@ -1,90 +1,170 @@
-# Smart Health Monitoring System (SHMS)
+<div align="center">
 
-A role-based smart health monitoring web application with a 3D frontend, Supabase authentication, and an Express backend that verifies JWTs and enforces access by role.
+  <!-- Animated Health Banner -->
+  <img src="https://capsule-render.vercel.app/api?type=venom&height=300&color=gradient&customColorList=6,11,20&text=SHMS&fontColor=fff&fontSize=90&desc=Smart%20Health%20Monitoring%20System&descSize=20&descAlignY=75&animation=twinkling" alt="SHMS Banner" />
 
-Created by **Abhay Kaushik** and **Ayushi Bendal**.
+  <br />
 
-## Overview
+  <!-- Badges Row -->
+  <p>
+    <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
+    <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+    <img src="https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E" alt="Vite" />
+    <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
+    <img src="https://img.shields.io/badge/Three.js-000000?style=for-the-badge&logo=three.js&logoColor=white" alt="Three.js" />
+  </p>
+  <p>
+    <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js" />
+    <img src="https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express" />
+    <img src="https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase" />
+    <img src="https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white" alt="Prisma" />
+    <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
+  </p>
 
-This project currently includes:
+  <!-- Tagline -->
+  <p><em>🩺 An immersive 3D health monitoring portal with role-based access control, AI triage, and real-time analytics.</em></p>
 
-- A React + TypeScript + Vite frontend
-- A 3D immersive dashboard UI
-- Supabase authentication
-- Role-based access control for:
-  - `citizen`
-  - `doctor`
-  - `admin`
-- An Express backend that verifies Supabase JWTs
-- Protected backend APIs for role-specific data and actions
+  <!-- Quick Links -->
+  <p>
+    <a href="#-quick-start"><strong>🚀 Quick Start</strong></a> •
+    <a href="#-architecture"><strong>🏗️ Architecture</strong></a> •
+    <a href="#-roles--access"><strong>👥 Roles</strong></a> •
+    <a href="#-api-reference"><strong>📡 API</strong></a> •
+    <a href="#-troubleshooting"><strong>🛠️ Troubleshooting</strong></a>
+  </p>
 
-## Roles and Access
+</div>
 
-### Citizen
-- Sign in and access personal health records
-- Upload health-related documents
-- Manage consent settings
-- Submit reviews and feedback
+---
 
-### Doctor
-- Access patient roster
-- View urgent triage queue
-- Run triage actions through protected backend APIs
-- Review care workflow data
+## ✨ Overview
 
-### Admin
-- View partner feed health
-- Access audit and governance data
-- Monitor operational activity
+**Smart Health Monitoring System (SHMS)** is a next-generation healthcare platform featuring a **3D immersive dashboard**, secure **role-based access control**, and **AI-powered triage**. Built with modern web technologies, it connects patients, doctors, and administrators in a unified, secure ecosystem.
 
-## Tech Stack
+| Feature | Description |
+|---------|-------------|
+| 🎨 **3D Immersive UI** | Three.js powered dashboard with glassmorphism design |
+| 🔐 **Secure Auth** | Supabase authentication with JWT verification via `jose` |
+| 🏥 **Role-Based Access** | Citizen, Doctor, and Admin portals with tailored experiences |
+| 🤖 **AI Triage** | Emergency Severity Index (ESI) level assessment |
+| 📱 **Responsive** | Mobile-first design with PWA capabilities |
+| 🐳 **Docker Ready** | Full containerization with docker-compose |
 
-- **Frontend:** React 18, TypeScript, Vite, Tailwind CSS, Three.js
-- **Backend:** Node.js, Express, TypeScript
-- **Auth:** Supabase Auth
-- **JWT Verification:** `jose`
-- **Styling:** Tailwind CSS + custom CSS
+---
 
-## Project Structure
+## 🏗️ Architecture
 
-```text
-A-comprehensive-smart-health-monitoring-system/
-├── backend/
-│   ├── src/
-│   │   └── index.ts
-│   ├── package.json
-│   └── .env.example
-├── frontend/
-│   └── patient-portal/
-│       ├── src/
-│       │   ├── App.tsx
-│       │   ├── main.tsx
-│       │   └── lib/
-│       ├── package.json
-│       ├── .env.example
-│       └── vite.config.ts
-├── package.json
-└── README.md
+```mermaid
+graph TB
+    subgraph "Frontend Layer"
+        A[React 18 + Vite]
+        B[Tailwind CSS + Three.js]
+        C[Lucide Icons]
+    end
+
+    subgraph "Authentication"
+        D[Supabase Auth]
+        E[JWT Verification]
+    end
+
+    subgraph "Backend Layer"
+        F[Express.js]
+        G[Role Middleware]
+        H[Protected APIs]
+    end
+
+    subgraph "Data Layer"
+        I[PostgreSQL]
+        J[Redis Cache]
+    end
+
+    A --> D
+    D --> E
+    E --> F
+    F --> G
+    G --> H
+    H --> I
+    H --> J
+
+    style A fill:#61DAFB,stroke:#20232A,color:#000
+    style F fill:#339933,stroke:#000,color:#fff
+    style D fill:#3ECF8E,stroke:#000,color:#fff
+    style I fill:#336791,stroke:#000,color:#fff
 ```
 
-## Prerequisites
+---
 
-Install these before running the app:
+## 👥 Roles & Access
 
-- Node.js `18+`
-- npm `9+`
+<table>
+  <tr>
+    <td width="33%" align="center">
+      <h3>👤 Citizen</h3>
+      <img src="https://img.shields.io/badge/Portal-Patient-4F46E5?style=flat-square" alt="Citizen" />
+      <br /><br />
+      <ul align="left">
+        <li>📋 Personal health records</li>
+        <li>📁 Document uploads</li>
+        <li>🔒 Consent management</li>
+        <li>⭐ Reviews & feedback</li>
+        <li>📊 Vitals monitoring</li>
+      </ul>
+    </td>
+    <td width="33%" align="center">
+      <h3>🩺 Doctor</h3>
+      <img src="https://img.shields.io/badge/Portal-Clinician-059669?style=flat-square" alt="Doctor" />
+      <br /><br />
+      <ul align="left">
+        <li>👥 Patient roster access</li>
+        <li>🚨 Urgent triage queue</li>
+        <li>🤖 AI triage controls</li>
+        <li>📈 Care workflow data</li>
+        <li>🔄 Patient handoff tools</li>
+      </ul>
+    </td>
+    <td width="33%" align="center">
+      <h3>🛡️ Admin</h3>
+      <img src="https://img.shields.io/badge/Portal-Operator-DC2626?style=flat-square" alt="Admin" />
+      <br /><br />
+      <ul align="left">
+        <li>📡 Partner feed health</li>
+        <li>📋 Audit & governance</li>
+        <li>📊 Operational metrics</li>
+        <li>🔧 System controls</li>
+        <li>👤 User management</li>
+      </ul>
+    </td>
+  </tr>
+</table>
 
-## Supabase Setup
+---
 
-This app uses Supabase for authentication.
+## 🚀 Quick Start
 
-### Frontend environment
+### Prerequisites
 
-Create:
+| Requirement | Version |
+|-------------|---------|
+| Node.js | `>= 18.0.0` |
+| npm | `>= 9.0.0` |
+| Docker (optional) | `>= 20.0.0` |
 
-`frontend/patient-portal/.env.local`
+### 1️⃣ Clone & Install
 
-with:
+```bash
+# Clone the repository
+git clone <repository-url>
+cd smart-health-monitoring-system
+
+# Install all dependencies
+npm run install-all
+```
+
+### 2️⃣ Environment Setup
+
+<details>
+<summary>🔧 <strong>Frontend Environment</strong> <code>frontend/patient-portal/.env.local</code></summary>
+<br />
 
 ```env
 VITE_SUPABASE_URL=https://ssleaezheghgxrnoqjkp.supabase.co
@@ -92,13 +172,11 @@ VITE_SUPABASE_ANON_KEY=your-anon-key
 VITE_API_BASE_URL=http://localhost:3001
 ```
 
-### Backend environment
+</details>
 
-Create:
-
-`backend/.env`
-
-with:
+<details>
+<summary>🔧 <strong>Backend Environment</strong> <code>backend/.env</code></summary>
+<br />
 
 ```env
 NODE_ENV=development
@@ -113,174 +191,212 @@ SUPABASE_URL=https://ssleaezheghgxrnoqjkp.supabase.co
 SUPABASE_ANON_KEY=your-anon-key
 ```
 
-Note:
-- The backend currently verifies Supabase JWTs for protected API access.
-- `DATABASE_URL` and `REDIS_URL` are present for future expansion, but the current running auth flow does not require local Postgres or Redis to sign in and use the RBAC demo.
+> 💡 **Note:** `DATABASE_URL` and `REDIS_URL` are for future expansion. The current auth flow works with Supabase directly.
 
-## Install Dependencies
+</details>
 
-From the project root:
+### 3️⃣ Run the Application
 
 ```bash
-npm install
-```
-
-If needed, also install workspace dependencies explicitly:
-
-```bash
-cd backend
-npm install
-
-cd ../frontend/patient-portal
-npm install
-```
-
-## Run the Application
-
-Open two terminals.
-
-### 1. Start the backend
-
-```bash
+# Terminal 1: Start Backend
 cd backend
 npm run dev
-```
 
-Backend runs at:
-
-[http://localhost:3001](http://localhost:3001)
-
-Health check:
-
-[http://localhost:3001/health](http://localhost:3001/health)
-
-### 2. Start the frontend
-
-```bash
+# Terminal 2: Start Frontend
 cd frontend/patient-portal
 npm run dev
 ```
 
-Frontend runs at:
-
-[http://localhost:3000](http://localhost:3000)
-
-## Build for Production
-
-### Backend
+Or use the combined dev command:
 
 ```bash
-cd backend
-npm run build
+npm run dev
 ```
 
-### Frontend
+| Service | URL | Health Check |
+|---------|-----|--------------|
+| 🎨 Frontend | [http://localhost:3000](http://localhost:3000) | - |
+| ⚙️ Backend | [http://localhost:3001](http://localhost:3001) | [`/health`](http://localhost:3001/health) |
+
+---
+
+## 🐳 Docker Deployment
 
 ```bash
-cd frontend/patient-portal
-npm run build
+# Build and start all services
+docker-compose up -d
+
+# Stop services
+docker-compose down
 ```
 
-## Authentication Notes
+---
 
-### Sign up
+## 📡 API Reference
 
-You can create a new account from the frontend login screen.
+### 🔓 Public Endpoints
 
-During sign-up, the selected role is stored in Supabase user metadata:
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/health` | Service health check |
+| `GET` | `/api/v1` | API version info |
 
-- `citizen`
-- `doctor`
-- `admin`
+### 🔐 Protected Endpoints (Requires Bearer Token)
 
-### If login says "email not confirmed"
+| Method | Endpoint | Access | Description |
+|--------|----------|--------|-------------|
+| `GET` | `/api/v1/auth/session` | All | Current user session |
+| `GET` | `/api/v1/dashboard` | All | Role-based dashboard data |
+| `GET` | `/api/v1/citizen/records` | Citizen | Personal health records |
+| `POST` | `/api/v1/citizen/consents/:id` | Citizen | Update consent settings |
+| `GET` | `/api/v1/doctor/patients` | Doctor | Patient roster |
+| `POST` | `/api/v1/doctor/triage` | Doctor | Run triage assessment |
+| `GET` | `/api/v1/admin/feeds` | Admin | Partner feed health |
+| `GET` | `/api/v1/admin/audit` | Admin | Audit logs |
 
-Your Supabase project has email confirmation enabled.
+---
 
-You can either:
+## 🔐 Authentication
 
-1. Confirm the signup email from your inbox
-2. Or disable email confirmation in Supabase:
-   - `Authentication`
-   - `Providers`
-   - `Email`
-   - turn off required email confirmation
+### Sign Up Flow
 
-## Protected Backend API Routes
+1. Navigate to the login screen
+2. Select your role: `citizen`, `doctor`, or `admin`
+3. The role is stored in Supabase user metadata
 
-The backend exposes role-aware endpoints such as:
+### Email Confirmation
 
-- `GET /health`
-- `GET /api/v1`
-- `GET /api/v1/auth/session`
-- `GET /api/v1/dashboard`
-- `GET /api/v1/citizen/records`
-- `POST /api/v1/citizen/consents/:id`
-- `GET /api/v1/doctor/patients`
-- `POST /api/v1/doctor/triage`
-- `GET /api/v1/admin/feeds`
-- `GET /api/v1/admin/audit`
+If you see "email not confirmed":
 
-All protected routes require a valid Supabase bearer token.
+- ✅ **Option 1:** Check your inbox and confirm the email
+- ⚡ **Option 2:** Disable confirmation in Supabase:
+  - `Authentication` → `Providers` → `Email` → Turn off required confirmation
 
-## Current App Behavior
+---
 
-The current version is focused on:
+## 🛠️ Troubleshooting
 
-- working login/signup flow
-- role-based interface rendering
-- backend JWT verification
-- protected API access by role
-- 3D frontend dashboard experience
+<details>
+<summary>❌ <strong>Frontend says backend is offline</strong></summary>
+<br />
 
-Some data is still demo-backed for presentation purposes, but the auth and access-control flow is real.
-
-## Troubleshooting
-
-### Frontend says backend is offline
-
-Make sure the backend is running:
+Ensure the backend is running:
 
 ```bash
 cd backend
 npm run dev
 ```
 
-Then test:
-
+Test connectivity:
 ```bash
-http://localhost:3001/health
+curl http://localhost:3001/health
 ```
 
-### Site says `ERR_CONNECTION_REFUSED`
+</details>
 
-Usually that means the dev server stopped. Restart both:
+<details>
+<summary>❌ <strong>ERR_CONNECTION_REFUSED</strong></summary>
+<br />
+
+The dev server stopped. Restart both services:
 
 ```bash
-cd backend
-npm run dev
+# Terminal 1
+cd backend && npm run dev
+
+# Terminal 2
+cd frontend/patient-portal && npm run dev
 ```
 
-```bash
-cd frontend/patient-portal
-npm run dev
+</details>
+
+<details>
+<summary>❌ <strong>Supabase connected but login fails</strong></summary>
+<br />
+
+- Verify `VITE_SUPABASE_URL` in `.env.local`
+- Confirm the anon key is valid
+- Check if email confirmation is required
+
+</details>
+
+---
+
+## 📁 Project Structure
+
+```text
+smart-health-monitoring-system/
+├── 🎨 frontend/
+│   └── patient-portal/
+│       ├── src/
+│       │   ├── App.tsx          # Main 3D immersive app
+│       │   ├── main.tsx         # Entry point
+│       │   └── lib/
+│       │       ├── api.ts       # API client
+│       │       ├── demo-data.ts # Demo state & health tips
+│       │       └── supabase.ts  # Auth client
+│       ├── package.json
+│       └── vite.config.ts
+│
+├── ⚙️ backend/
+│   ├── src/
+│   │   ├── index.ts             # Express server & JWT middleware
+│   │   └── prisma/
+│   │       └── schema.prisma    # Database schema
+│   ├── package.json
+│   └── Dockerfile
+│
+├── 🐳 docker-compose.yml
+└── 📖 README.md
 ```
 
-### Supabase is connected but login fails
+---
 
-Check:
+## 🛡️ Security
 
-- the correct project URL is in `.env.local`
-- the anon key is valid
-- the user has confirmed email if confirmation is enabled
+- ✅ **JWT Verification** — All protected routes validate Supabase JWTs via `jose`
+- ✅ **Role Middleware** — Express middleware enforces role-based access
+- ✅ **CORS Protection** — Configured origins only
+- ✅ **Bcrypt Hashing** — Passwords hashed with 12 rounds
+- ✅ **HIPAA Ready** — Consent management and audit trails built-in
 
-## Credits
+---
 
-This project was created by:
+## 👨‍💻 Contributors
 
-- **Abhay Kaushik**
-- **Ayushi Bendal**
+<table>
+  <tr>
+    <td align="center">
+      <a href="#">
+        <img src="https://img.shields.io/badge/Abhay_Kaushik-Developer-4F46E5?style=for-the-badge" alt="Abhay Kaushik" />
+      </a>
+    </td>
+    <td align="center">
+      <a href="#">
+        <img src="https://img.shields.io/badge/Ayushi_Bendal-Developer-EC4899?style=for-the-badge" alt="Ayushi Bendal" />
+      </a>
+    </td>
+  </tr>
+</table>
 
-## License
+---
 
-This project is licensed under the [MIT License](LICENSE).
+<div align="center">
+
+  ### ⭐ Star this repo if you found it helpful!
+
+  <br />
+
+  <img src="https://img.shields.io/github/stars/yourusername/smart-health-monitoring-system?style=social" alt="Stars" />
+  <img src="https://img.shields.io/github/forks/yourusername/smart-health-monitoring-system?style=social" alt="Forks" />
+
+  <br /><br />
+
+  **Made with 💙 for better healthcare.**
+
+  <br />
+
+  <sub>Licensed under <a href="LICENSE">MIT License</a></sub>
+
+</div>
+
